@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Hushh Ambassify | Premium Ambassador Portal</title>
+    <!-- External Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+         margin: 0;
+         padding: 0;
+         box-sizing:
+         border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f4f7fc;
+            color: #1e2a2e;
+            min-height: 100vh;
+        }
+        .login-wrapper {
+            position: fixed;
+            top: 0;
+           left: 0; 
+           width: 100%;
+            height: 100%;
+            background:
+             linear-gradient(135deg, #1a4a3a 0%, #0f2e25 100%);
+            display: flex; 
+            align-items: center;
+             justify-content: center;
+            z-index: 2000; 
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .login-wrapper.hide {
+             opacity: 0; 
+             visibility: hidden;
+              pointer-events: none; 
+            }
+        .login-card {
+            background: rgba(255,255,255,0.98);
+             border-radius: 48px; 
+             padding: 2.8rem 2.5rem;
+            width: 460px; 
+            max-width: 90%; 
+            box-shadow: 0 35px 65px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        .login-logo img { 
+            width: 85px; 
+            height: 85px; 
+            border-radius: 50%;
+            object-fit: cover;
+             border: 3px solid #52ab98;
+             }
+        .login-card h1 {
+             font-size: 2.4rem;
+              font-weight: 800;
+               background: linear-gradient(135deg, #2c5a4e, #52ab98); 
+               -webkit-background-clip: text;
+                background-clip: text;
+                 color: transparent;
+                 }
+        .login-input { 
+            width: 100%;
+             padding: 14px 18px;
+              border-radius: 60px;
+               border: 1.5px solid #e0ece8;
+               font-family: 'Inter', sans-serif;
+                margin-bottom: 1rem; 
+            }
+        .login-btn {
+             background: linear-gradient(135deg, #2c5a4e, #1e4a3a); 
+             color: white;
+              border: none;
+               padding: 14px; 
+               width: 100%; 
+               border-radius: 60px;
+                font-weight: 800;
+                 cursor: pointer;
+                 }
+        .demo-note {
+             margin-top: 1.5rem; 
+             font-size: 0.7rem;
+              color: #8ba0a8;
+             }
+        .dashboard-container { 
+            max-width: 1600px;
+             margin: 0 auto;
+              padding: 2rem 1.5rem; 
+              display: none;
+             }
+        .dashboard-container.active {
+             display: block;
+             }
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+             background: linear-gradient(135deg, #52ab98, #3b7a6b); 
+             padding: 1.2rem 2rem; 
+             border-radius: 32px;
+              margin-bottom: 2rem; 
+              flex-wrap: wrap; 
+              gap: 1rem;
+             }
+        .title-section h1 { 
+            font-size: 2.5rem;
+             color: white;
+              display: flex;
+               align-items: center; 
+               gap: 12px;
+             }
+        .logo {
+             width: 48px; 
+             height: 48px; 
+             border-radius: 50%;
+              border: 2px solid white; 
+              object-fit: cover;
+             }
+        .logout-btn {
+             background: rgba(255,255,255,0.2);
+              border: 1px solid rgba(255,255,255,0.4); 
+              color: white;
+               padding: 8px 18px; 
+               border-radius: 40px; 
+               cursor: pointer;
+                font-weight: 600; 
+            }
+        .top-spotlight {
+             background: rgba(255,255,255,0.2);
+              backdrop-filter: blur(10px); 
+              border-radius: 60px;
+               padding: 0.6rem 1.5rem;
+                display: flex;
+                 align-items: center; 
+                 gap: 1rem;
+                  border: 1px solid rgba(255,255,255,0.3);
+                 }
+        .kpi-grid {
+             display: grid; 
+             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+              gap: 1.5rem; 
+              margin-bottom: 2rem;
+             }
+        .kpi-card {
+             background: white;
+              border-radius: 28px;
+               padding: 1.3rem 1.6rem;
+                border-left: 6px solid #52ab98;
+                 box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+                 }
+        .kpi-value { 
+            font-size: 2.4rem;
+             font-weight: 800; 
+             color: #2c4b42;
+             }
+        .kpi-sub { 
+            font-size: 0.75rem; 
+            color: #6c8d82; 
+            margin-top: 5px;
+         }
+        .growth-percentage {
+             font-size: 1rem; 
+             font-weight: 700;
+              margin-top: 8px;
+             }
+        .positive-badge {
+             color: #27ae60;
+             }
+        .negative-badge { 
+            color: #e74c3c;
+         }
+        .charts-row {
+             display: grid; 
+             grid-template-columns: repeat(3, 1fr); 
+             gap: 1.5rem; 
+             margin-bottom: 2rem;
+             }
+        .chart-card { 
+            background: white; 
+            border-radius: 28px; 
+            padding: 1rem;
+             box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+             }
+        .weekly-report-section {
+             background: white;
+              border-radius: 28px; 
+              padding: 1.5rem;
+               margin-bottom: 2rem;
+                box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+             }
+        .weekly-title {
+             font-size: 1.5rem;
+              font-weight: 800;
+               color: #2c5a4e;
+               
+               margin-bottom: 1.5rem;
+                display: flex;
+                 align-items: center;
+                  gap: 10px;
+                }
+        .weekly-stats-grid { 
+            display: grid;
+             grid-template-columns: repeat(4, 1fr);
+              gap: 1rem;
+               margin-bottom: 1.5rem;
+             }
+        .weekly-stat-card { 
+            background: linear-gradient(135deg, #f9fdfb, #ffffff);
+             padding: 1rem;
+              border-radius: 20px; 
+              text-align: center; 
+              border: 1px solid #e0ece8;
+             }
+        .weekly-stat-value {
+             font-size: 1.8rem;
+              font-weight: 800;
+              color: #52ab98;
+             }
+        .weekly-stat-label {
+             font-size: 0.8rem;
+              color: #6c8d82;
+               margin-top: 5px;
+             }
+        .individual-growth {
+             margin-top: 1.5rem;
+             }
+        .growth-table {
+             width: 100%; 
+             margin-top: 1rem;
+             }
+        .growth-table th,
+         .growth-table td {
+             padding: 10px; 
+             text-align: left;
+              border-bottom: 1px solid #e0ece8;
+             }
+        .positive-growth {
+             color: #27ae60; 
+             font-weight: 600; 
+            }
+        .negative-growth {
+            color: #e74c3c; 
+            font-weight: 600;
+         }
+        canvas {
+             max-height: 220px;
+              width: 100%;
+             }
+        .data-section { 
+            display: flex;
+             flex-wrap: wrap;
+              gap: 1.8rem;
+               margin-bottom: 2rem;
+             }
+        .ambassador-table-wrapper { 
+            flex: 2;
+             background: white;
+              border-radius: 28px;
+               padding: 1.2rem;
+             }
+        .leaderboard-wrapper {
+            flex: 1.2;
+             background: white; 
+             border-radius: 28px; 
+             padding: 1.2rem;
+             }
+        .section-title { 
+            font-weight: 800;
+             font-size: 1.4rem;
+              display: flex;
+               align-items: center; 
+               justify-content: space-between; 
+               margin-bottom: 1rem; 
+               flex-wrap: wrap;
+                gap: 10px;
+                 color: #2c4b42;
+                 }
+        .filter-buttons {
+             display: flex;
+              gap: 12px; 
+              margin-bottom: 1.2rem;
+               flex-wrap: wrap;
+             }
+        .filter-btn { 
+            background: #f0f7f5;
+             border: none;
+             
+             padding: 6px 16px;
+              border-radius: 40px; 
+              font-weight: 700; 
+              cursor: pointer;
+             }
+        .filter-btn.active {
+             background: #52ab98;
+              color: white;
+             }
+        table {
+             width: 100%; 
+             border-collapse: collapse;
+             }
+        th, td {
+             text-align: left;
+              padding: 12px 8px;
+               border-bottom: 1px solid #e0ece8;
+                font-size: 0.9rem;
+             }
+        .badge-status {
+             display: inline-block; 
+             padding: 0.3rem 0.9rem; 
+             border-radius: 40px; 
+             font-size: 0.75rem;
+              font-weight: 700;
+             }
+        .btn-icon { 
+            background: #2c5a4e;
+             color: white;
+              border: none;
+               padding: 6px 12px;
+                border-radius: 40px; 
+                font-size: 0.7rem;
+                
+                cursor: pointer;
+                 margin: 0 3px;
+                  transition: 0.2s; 
+                }
+        .btn-icon i {
+             margin-right: 4px;
+             }
+        .btn-icon:hover {
+             background: #1e4a3a;
+              transform: scale(0.96); 
+            }
+        .leaderboard-item {
+             display: flex; 
+             justify-content: space-between;
+              align-items: center;
+               padding: 12px 8px; 
+               border-bottom: 1px solid #eef2f8; 
+            }
+        .top-performer {
+             background: linear-gradient(90deg, #fff4e0, #ffffff);
+              border-radius: 60px; 
+              margin: 4px 0;
+               padding: 10px 14px;
+             }
+        .upload-area { 
+            background: white;
+             border-radius: 28px;
+              padding: 1.2rem;
+               text-align: center;
+                border: 1px dashed #b9d0e0; 
+                margin-top: 1rem;
+             }
+        .upload-label {
+             background: #2c5a4e; 
+             color: white;
+              padding: 8px 22px; 
+              border-radius: 40px;
+               cursor: pointer;
+                display: inline-block;
+             }
+        footer {
+             text-align: center;
+              margin-top: 2rem; 
+              color: #6c8d82;
+             }
+        .chatbot-container {
+             position: fixed; 
+             bottom: 25px;
+              right: 25px;
+               z-index: 1000; 
+            }
+        .chatbot-toggle { 
+            background: linear-gradient(135deg, #52ab98, #3b7a6b); 
+            width: 65px;
+             height: 65px;
+              border-radius: 65px; 
+              display: flex;
+               align-items: center;
+                justify-content: center;
+                 cursor: pointer; 
+                 color: white; 
+                 font-size: 1.8rem; 
+                 box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+                 }
+        .chatbot-window { 
+            position: absolute;
+             bottom: 80px;
+              right: 0;
+               width: 420px;
+                max-width: 85vw;
+                 background: white;
+                  border-radius: 28px;
+                   display: none; 
+                   flex-direction: column;
+                    overflow: hidden;
+                     box-shadow: 0 25px 45px rgba(0,0,0,0.25);
+                     }
+        .chatbot-header {
+             background: #2c5a4e;
+              color: white;
+               padding: 16px;
+                display: flex;
+                 justify-content: space-between;
+                  font-weight: 800; }
+        .chatbot-messages {
+             height: 400px; 
+             overflow-y: auto;
+              padding: 15px; 
+              background: #fafdfc;
+             }
+        .message {
+             margin-bottom: 12px;
+              padding: 10px 14px;
+               border-radius: 18px;
+                max-width: 90%;
+                 font-size: 0.85rem; 
+                }
+        .user-message { 
+            background: #52ab98;
+             color: white;
+              margin-left: auto;
+             }
+        .bot-message { 
+            background: #f0f7f5;
+             border-left: 3px solid #52ab98;
+             }
+        .chatbot-input-area {
+             display: flex;
+              border-top: 1px solid #e0ece8;
+             }
+        .chatbot-input { 
+            flex: 1;
+             padding: 12px;
+              border: none;
+               outline: none;
+             }
+        .chatbot-send {
+             background: #52ab98; 
+             color: white;
+              border: none;
+               padding: 0 20px;
+                cursor: pointer;
+             }
+        @media (max-width: 1000px) { 
+            .charts-row { grid-template-columns: 1fr;
+             } 
+             .weekly-stats-grid {
+                 grid-template-columns: repeat(2, 1fr);
+                 }
+                 }
+        .profile-preview { 
+            width: 40px; 
+            height: 40px; 
+            border-radius: 50%;
+             object-fit: cover; 
+             background: #ccc;
+              margin-right: 8px;
+               vertical-align: middle; 
+            }
+    </style>
+</head>
+<body>
+
+<div id="loginWrapper" class="login-wrapper">
+    <div class="login-card">
+        <div class="login-logo"><img src="https://res.cloudinary.com/dgfh929jv/image/upload/v1774351814/flogo_xbosid.jpg" alt="Hushh Ambassify Logo"></div>
+        <h1>Hushh Ambassify</h1>
+        <div class="login-tagline">Campus Ambassador Command Center</div>
+        <input type="email" id="loginEmail" class="login-input" placeholder="campus@ambassify.com">
+        <input type="password" id="loginPassword" class="login-input" placeholder="password">
+        <button id="doLoginBtn" class="login-btn">Access Dashboard</button>
+    </div>
+</div>
+
+<div id="dashboardContainer" class="dashboard-container">
+    <div class="header">
+        <div class="title-section"><h1><img src="https://res.cloudinary.com/dgfh929jv/image/upload/v1774351814/flogo_xbosid.jpg" class="logo" alt="logo">Hushh Ambassify</h1><p>Track · Compete · Grow</p></div>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <div class="top-spotlight" id="topSpotlight"><div class="spotlight-icon"><i class="fas fa-crown"></i></div><div class="spotlight-info"><div class="spotlight-label">🏆 TOP PERFORMER</div><div class="spotlight-name" id="spotlightName">--</div><div class="spotlight-stats" id="spotlightStats"></div></div></div>
+            <button id="logoutButton" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </div>
+
+    <div class="kpi-grid" id="kpiContainer"></div>
+    
+    <div class="weekly-report-section" id="weeklyReportSection">
+        <div class="weekly-title">
+            <i class="fas fa-calendar-week" style="color: #52ab98;"></i>
+            <span>Weekly Growth Report</span>
+        </div>
+        <div class="weekly-stats-grid" id="weeklyStatsGrid"></div>
+        <div class="individual-growth">
+            <h4 style="margin-bottom: 10px;"><i class="fas fa-chart-line"></i> Individual Weekly Growth</h4>
+            <div style="overflow-x: auto;">
+                <table class="growth-table" id="growthTable">
+                    <thead>汽<th>Ambassador</th><th>Last Week</th><th>This Week</th><th>Growth</th><th>Growth Rate</th><th>Trend</th> </thead>
+                    <tbody id="growthTableBody"></tbody>
+                  </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="charts-row">
+        <div class="chart-card"><h4>Signups per Ambassador</h4><canvas id="barChart"></canvas></div>
+        <div class="chart-card"><h4>Weekly Growth Comparison</h4><canvas id="weeklyGrowthChart"></canvas></div>
+        <div class="chart-card"><h4>Contribution %</h4><canvas id="pieChart"></canvas></div>
+    </div>
+
+    <div class="data-section">
+        <div class="ambassador-table-wrapper">
+            <div class="section-title"><span><i class="fas fa-users"></i> Ambassador Directory</span></div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">📊 All</button>
+                <button class="filter-btn" data-filter="red">🔴 High Clicks/Low Conv</button>
+                <button class="filter-btn" data-filter="green">🟢 Strong Engagement</button>
+                <button class="filter-btn" data-filter="yellow">🟡 Needs Improvement</button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table id="ambassadorTable"><thead> <th>Ambassador</th><th>Signups</th><th>Engagement</th><th>Performance</th><th>Actions</th> </thead><tbody id="tableBody"></tbody> </table>
+            </div>
+        </div>
+        <div class="leaderboard-wrapper">
+            <div class="section-title"><span><i class="fas fa-trophy"></i> Leaderboard</span></div>
+            <div id="leaderboardList"></div>
+        </div>
+    </div>
+    <div class="upload-area"><i class="fas fa-cloud-upload-alt"></i> <p><strong>Upload CSV/JSON</strong></p><label class="upload-label" for="fileInput"><i class="fas fa-upload"></i> Upload Data</label><input type="file" id="fileInput" accept=".csv, .json" style="display: none;"></div>
+    <footer>⚡ AI Assistant | Weekly growth tracking</footer>
+</div>
+
+<div class="chatbot-container"><div class="chatbot-toggle" id="chatbotToggle"><i class="fas fa-headset"></i></div><div class="chatbot-window" id="chatbotWindow"><div class="chatbot-header"><span>Ambassador AI</span><button id="chatbotClose" style="background:none;border:none;color:white;cursor:pointer;">✕</button></div><div class="chatbot-messages" id="chatMessages"><div class="message bot-message">Hello! Ask about top performers, weekly growth, or totals.</div></div><div class="chatbot-input-area"><input type="text" id="chatInput" class="chatbot-input" placeholder="Ask me..."><button id="chatSend" class="chatbot-send">Send</button></div></div></div>
+
+<script>
+    // Enhanced data model with complete weekly history and quarterly data tracking
+    let ambassadorsData = [
+        { id: 1, name: "Emma Rodriguez", signups: 42, clicks: 210, engagementRate: 0.86, growthTrend: 12, profilePic: "https://randomuser.me/api/portraits/women/1.jpg", referralCode: "EMMA42X", lastWeekSignups: 38, weeklyHistory: [35, 38, 42], weeklyDates: ["Week 1", "Week 2", "This Week"], quarterStartSignups: 30 },
+        { id: 2, name: "Liam Chen", signups: 68, clicks: 245, engagementRate: 0.92, growthTrend: 24, profilePic: "https://randomuser.me/api/portraits/men/2.jpg", referralCode: "LIAM68Z", lastWeekSignups: 55, weeklyHistory: [48, 55, 68], weeklyDates: ["Week 1", "Week 2", "This Week"], quarterStartSignups: 44 },
+        { id: 3, name: "Sophia Kapoor", signups: 27, clicks: 189, engagementRate: 0.55, growthTrend: 5, profilePic: "https://randomuser.me/api/portraits/women/3.jpg", referralCode: "SOPHIA27", lastWeekSignups: 26, weeklyHistory: [24, 26, 27], weeklyDates: ["Week 1", "Week 2", "This Week"], quarterStartSignups: 22 },
+        { id: 4, name: "Marcus Thorne", signups: 53, clicks: 198, engagementRate: 0.79, growthTrend: 18, profilePic: "https://randomuser.me/api/portraits/men/4.jpg", referralCode: "MARCUS53", lastWeekSignups: 47, weeklyHistory: [42, 47, 53], weeklyDates: ["Week 1", "Week 2", "This Week"], quarterStartSignups: 38 },
+        { id: 5, name: "Olivia Nkosi", signups: 89, clicks: 312, engagementRate: 0.95, growthTrend: 31, profilePic: "https://randomuser.me/api/portraits/women/5.jpg", referralCode: "OLIVIA89X", lastWeekSignups: 72, weeklyHistory: [64, 72, 89], weeklyDates: ["Week 1", "Week 2", "This Week"], quarterStartSignups: 55 },
+        { id: 6, name: "Noah Williams", signups: 14, clicks: 132, engagementRate: 0.41, growthTrend: -2, profilePic: "https://randomuser.me/api/portraits/men/6.jpg", referralCode: "NOAH14", lastWeekSignups: 15, weeklyHistory: [16, 15, 14], weeklyDates: ["Week 1", "Week 2", "This Week"], quarterStartSignups: 18 }
+    ];
+
+    let currentFilter = "all";
+    let barChartObj, weeklyGrowthChartObj, pieChartObj;
+
+    function computeConversionRate(amb) { return amb.clicks ? ((amb.signups / amb.clicks) * 100).toFixed(1) : 0; }
+    
+    function getOverallConversionRate() {
+        const totalSignups = ambassadorsData.reduce((sum, a) => sum + a.signups, 0);
+        const totalClicks = ambassadorsData.reduce((sum, a) => sum + a.clicks, 0);
+        return totalClicks > 0 ? ((totalSignups / totalClicks) * 100).toFixed(1) : 0;
+    }
+    
+    // Calculate quarterly growth percentage (from quarter start to current)
+    function getQuarterlyGrowthPercentage() {
+        const totalCurrentSignups = ambassadorsData.reduce((sum, a) => sum + a.signups, 0);
+        const totalQuarterStartSignups = ambassadorsData.reduce((sum, a) => sum + (a.quarterStartSignups || a.signups - 15), 0);
+        if (totalQuarterStartSignups === 0) return 0;
+        const growthPercent = ((totalCurrentSignups - totalQuarterStartSignups) / totalQuarterStartSignups * 100).toFixed(1);
+        return parseFloat(growthPercent);
+    }
+    
+    // Get this week's total growth (actual number)
+    function getThisWeekTotalGrowth() {
+        return ambassadorsData.reduce((sum, a) => sum + (a.signups - a.lastWeekSignups), 0);
+    }
+    
+    function getPerformanceCategory(amb) {
+        let conv = (amb.signups / amb.clicks) * 100;
+        if (amb.clicks > 150 && conv < 20) return "red";
+        if (amb.engagementRate > 0.75) return "green";
+        return "yellow";
+    }
+    function getFilteredData() { return currentFilter === "all" ? ambassadorsData : ambassadorsData.filter(a => getPerformanceCategory(a) === currentFilter); }
+    
+    function updateWeeklyGrowth() {
+        const totalThisWeek = ambassadorsData.reduce((sum, a) => sum + a.signups, 0);
+        const totalLastWeek = ambassadorsData.reduce((sum, a) => sum + a.lastWeekSignups, 0);
+        const overallGrowth = totalLastWeek > 0 ? ((totalThisWeek - totalLastWeek) / totalLastWeek * 100).toFixed(1) : 0;
+        const topGrower = [...ambassadorsData].sort((a, b) => (b.signups - b.lastWeekSignups) - (a.signups - a.lastWeekSignups))[0];
+        
+        document.getElementById("weeklyStatsGrid").innerHTML = `
+            <div class="weekly-stat-card"><div class="weekly-stat-value">${totalThisWeek}</div><div class="weekly-stat-label">This Week Signups</div></div>
+            <div class="weekly-stat-card"><div class="weekly-stat-value">${totalLastWeek}</div><div class="weekly-stat-label">Last Week Signups</div></div>
+            <div class="weekly-stat-card"><div class="weekly-stat-value ${overallGrowth >= 0 ? 'positive-growth' : 'negative-growth'}">${overallGrowth >= 0 ? '+' : ''}${overallGrowth}%</div><div class="weekly-stat-label">Overall Growth</div></div>
+            <div class="weekly-stat-card"><div class="weekly-stat-value">${topGrower.name.split(' ')[0]}</div><div class="weekly-stat-label">🏆 Top Grower</div></div>
+        `;
+        
+        const growthBody = document.getElementById("growthTableBody");
+        growthBody.innerHTML = "";
+        ambassadorsData.forEach(amb => {
+            const weeklyGrowth = amb.signups - amb.lastWeekSignups;
+            const growthRate = amb.lastWeekSignups > 0 ? ((weeklyGrowth / amb.lastWeekSignups) * 100).toFixed(1) : 0;
+            const trendIcon = weeklyGrowth > 0 ? '📈' : (weeklyGrowth < 0 ? '📉' : '➡️');
+            const row = growthBody.insertRow();
+            row.innerHTML = `<td><img src="${amb.profilePic}" class="profile-preview"> <strong>${amb.name}</strong></td><td>${amb.lastWeekSignups}</td><td>${amb.signups}</td><td class="${weeklyGrowth >= 0 ? 'positive-growth' : 'negative-growth'}">${weeklyGrowth >= 0 ? '+' : ''}${weeklyGrowth}</td><td class="${growthRate >= 0 ? 'positive-growth' : 'negative-growth'}">${growthRate >= 0 ? '+' : ''}${growthRate}%</td><td>${trendIcon}</td>`;
+        });
+        
+        if(weeklyGrowthChartObj) weeklyGrowthChartObj.destroy();
+        const names = ambassadorsData.map(a => a.name.split(" ")[0]);
+        weeklyGrowthChartObj = new Chart(document.getElementById("weeklyGrowthChart"), { type: 'bar', data: { labels: names, datasets: [{ label: 'Last Week', data: ambassadorsData.map(a => a.lastWeekSignups), backgroundColor: '#e0ece8' }, { label: 'This Week', data: ambassadorsData.map(a => a.signups), backgroundColor: '#52ab98' }] }, options: { responsive: true, maintainAspectRatio: true } });
+    }
+    
+    function refreshAll() {
+        const totalSignups = ambassadorsData.reduce((s,a)=>s+a.signups,0);
+        const avgEng = ambassadorsData.reduce((s,a)=>s+a.engagementRate,0)/ambassadorsData.length;
+        const conversionRate = getOverallConversionRate();
+        const weeklyTotalGrowth = getThisWeekTotalGrowth();
+        const quarterlyGrowthPercent = getQuarterlyGrowthPercentage();
+        const isPositiveQuarter = quarterlyGrowthPercent >= 0;
+        
+        // Updated KPI Cards: Total Signups, Avg Engagement, Conversion Rate, This Week Growth (with quarterly variation - removed "vs quarter start" text)
+        document.getElementById("kpiContainer").innerHTML = `
+            <div class="kpi-card"><h3>Total Signups</h3><div class="kpi-value">${totalSignups}</div><div class="kpi-sub">lifetime registrations</div></div>
+            <div class="kpi-card"><h3>Avg Engagement</h3><div class="kpi-value">${(avgEng*100).toFixed(0)}%</div><div class="kpi-sub">interaction rate</div></div>
+            <div class="kpi-card"><h3>Conversion Rate</h3><div class="kpi-value">${conversionRate}%</div><div class="kpi-sub">signups / total clicks</div></div>
+            <div class="kpi-card"><h3>📈 This Week Growth</h3><div class="kpi-value" style="font-size: 1.8rem;">${weeklyTotalGrowth >= 0 ? '+' : ''}${weeklyTotalGrowth}</div><div class="kpi-sub">new signups this week</div><div class="growth-percentage ${isPositiveQuarter ? 'positive-badge' : 'negative-badge'}">📊 Quarterly variation: ${isPositiveQuarter ? '+' : ''}${quarterlyGrowthPercent}%</div></div>
+        `;
+        updateWeeklyGrowth();
+        
+        const sorted = [...ambassadorsData].sort((a,b)=>b.signups - a.signups);
+        document.getElementById("leaderboardList").innerHTML = `<div>${sorted.map((amb, idx) => `<div class="leaderboard-item ${idx===0?'top-performer':''}"><div><span>${idx===0?"🥇":idx===1?"🥈":idx===2?"🥉":idx+1}</span> <strong>${amb.name}</strong> <span>${amb.signups} signups</span></div></div>`).join("")}</div>`;
+        
+        if(barChartObj) barChartObj.destroy();
+        if(pieChartObj) pieChartObj.destroy();
+        const names = ambassadorsData.map(a=>a.name.split(" ")[0]);
+        barChartObj = new Chart(document.getElementById("barChart"), { type:'bar', data:{ labels:names, datasets:[{ label:'Signups', data:ambassadorsData.map(a=>a.signups), backgroundColor:'#52ab98' }] } });
+        pieChartObj = new Chart(document.getElementById("pieChart"), { type:'pie', data:{ labels:names, datasets:[{ data:ambassadorsData.map(a=>a.signups), backgroundColor:['#52ab98','#3b7a6b','#f4a261','#e76f51','#2c5a4e','#e9c46a'] }] } });
+        
+        const top = sorted[0];
+        document.getElementById("spotlightName").innerHTML = top.name;
+        document.getElementById("spotlightStats").innerHTML = `<span>${top.signups} signups</span><span>${(top.engagementRate*100).toFixed(0)}% eng</span><span>+${top.growthTrend}%</span>`;
+        renderTable();
+    }
+    
+    function renderTable() {
+        const tbody = document.getElementById("tableBody");
+        tbody.innerHTML = "";
+        getFilteredData().forEach(amb => {
+            const cat = getPerformanceCategory(amb);
+            let statusText = cat==="red"?"🔴 High Clicks/Low Conv":cat==="green"?"🟢 Strong Engagement":"🟡 Needs Improvement";
+            const row = tbody.insertRow();
+            // Ambassador Directory table now has only: Ambassador, Signups, Engagement, Performance, Actions
+            row.innerHTML = `<td><img src="${amb.profilePic}" class="profile-preview"> <strong>${amb.name}</strong></td><td style="font-weight:700;">${amb.signups}</td><td>${(amb.engagementRate*100).toFixed(0)}%</td><td><span class="badge-status" style="background: ${cat==='red'?'#ffe0e0':cat==='green'?'#e0ffe0':'#fff0e0'};">${statusText}</span></td><td><button class="btn-icon signup-action" data-id="${amb.id}"><i class="fas fa-user-plus"></i> Sign up</button></td>`;
+        });
+    }
+    
+    function handleSignup(id) {
+        const amb = ambassadorsData.find(a=>a.id===id);
+        if(amb) {
+            amb.lastWeekSignups = amb.signups;
+            amb.signups += Math.floor(Math.random() * 5) + 1;
+            amb.clicks += Math.floor(Math.random() * 15) + 5;
+            amb.engagementRate = Math.min(0.98, amb.engagementRate + 0.005);
+            amb.growthTrend += Math.floor(Math.random() * 3) + 1;
+            amb.weeklyHistory.push(amb.signups);
+            refreshAll();
+        }
+    }
+    
+    document.addEventListener("click", (e) => { if(e.target.classList && e.target.classList.contains("signup-action")) { handleSignup(parseInt(e.target.getAttribute("data-id"))); } });
+    
+    document.getElementById("fileInput").addEventListener("change", (e) => { if(e.target.files.length) { const reader = new FileReader(); reader.onload = (ev) => { try { const newData = JSON.parse(ev.target.result).map((item,i) => ({ id: i+1, ...item, lastWeekSignups: item.signups - 3, weeklyHistory: [item.signups - 6, item.signups - 3, item.signups], quarterStartSignups: item.signups - 12 })); if(newData.length) { ambassadorsData = newData; refreshAll(); } } catch(err) { alert("Error: "+err.message); } }; reader.readAsText(e.target.files[0]); } });
+    document.querySelectorAll(".filter-btn").forEach(btn => { btn.addEventListener("click", () => { document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); currentFilter = btn.getAttribute("data-filter"); renderTable(); }); });
+    
+    // Chatbot
+    const chatbotToggle = document.getElementById('chatbotToggle'), chatbotWindow = document.getElementById('chatbotWindow'), chatbotClose = document.getElementById('chatbotClose');
+    chatbotToggle.onclick = () => chatbotWindow.style.display = chatbotWindow.style.display === 'flex' ? 'none' : 'flex';
+    chatbotClose.onclick = () => chatbotWindow.style.display = 'none';
+    function addMessage(text, isUser) { const div = document.createElement('div'); div.className = `message ${isUser ? 'user-message' : 'bot-message'}`; div.innerHTML = text; document.getElementById('chatMessages').appendChild(div); div.scrollIntoView(); }
+    document.getElementById('chatSend').onclick = () => { const msg = document.getElementById('chatInput').value.trim(); if(!msg) return; addMessage(msg, true); let reply = "Ask about top performer, weekly growth, or totals."; if(msg.toLowerCase().includes('weekly')) { const totalGrowth = ambassadorsData.reduce((s,a)=>s+(a.signups - a.lastWeekSignups),0); reply = `📈 Weekly team growth: ${totalGrowth >= 0 ? '+' : ''}${totalGrowth} signups overall.`; } else if(msg.toLowerCase().includes('top')) { const top = [...ambassadorsData].sort((a,b)=>b.signups - a.signups)[0]; reply = `🏆 Top performer: ${top.name} with ${top.signups} signups.`; } else if(msg.toLowerCase().includes('total')) { reply = `📊 Total signups: ${ambassadorsData.reduce((s,a)=>s+a.signups,0)}`; } else if(msg.toLowerCase().includes('conversion')) { reply = `📈 Overall conversion rate: ${getOverallConversionRate()}%`; } else if(msg.toLowerCase().includes('quarter') || msg.toLowerCase().includes('variation')) { const qGrowth = getQuarterlyGrowthPercentage(); reply = `📅 Quarterly growth variation: ${qGrowth >= 0 ? '+' : ''}${qGrowth}% compared to quarter start.`; } setTimeout(()=>addMessage(reply, false), 200); document.getElementById('chatInput').value = ''; };
+    
+    // Login
+    const loginWrapper = document.getElementById('loginWrapper'), dashboard = document.getElementById('dashboardContainer');
+    function checkSession() { if(localStorage.getItem('ambassify_logged_in') === 'true') { loginWrapper.classList.add('hide'); dashboard.classList.add('active'); refreshAll(); } else { loginWrapper.classList.remove('hide'); dashboard.classList.remove('active'); } }
+    document.getElementById('doLoginBtn').onclick = () => { localStorage.setItem('ambassify_logged_in','true'); checkSession(); };
+    document.getElementById('logoutButton').onclick = () => { localStorage.removeItem('ambassify_logged_in'); checkSession(); };
+    checkSession();
+</script>
+</body>
+</html>
+```
